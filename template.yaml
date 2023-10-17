@@ -43,7 +43,7 @@ Conditions:
     - Condition: FullDeployment
 Globals:
   Function:
-    Runtime: Python3.9
+    Runtime: python3.7
     Timeout: 180
     MemorySize: 128
     Environment:
@@ -91,7 +91,7 @@ Resources:
     Condition: FullDeployment
     Type: AWS::IAM::Role
     Properties:
-      Description: "This role enables the PMP lambda to run and gather the PMP information"
+      Description: "Enables the PMP lambda to run and gather the PMP information"
       Policies:
         - PolicyName: !Sub ${ManagementExperienceId}-SyncPMPExperienceManagementPolicy
           PolicyDocument:
@@ -199,7 +199,7 @@ Resources:
     Condition: FullDeployment
     Type: AWS::IAM::Role
     Properties:
-      Description: "This role enables the PMP lambda to run and gather the PMP information"
+      Description: "Enables the SNSAddPermissionLambda to add subscription permission to the SNS sichronization trigger topic"
       Policies:
         - PolicyName: !Sub ${ManagementExperienceId}-SyncPMPExperienceManagementPolicy
           PolicyDocument:
@@ -233,7 +233,6 @@ Resources:
     Condition: FullDeployment
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: python3.9
       Handler: app.lambda_handler
       CodeUri: src/lambda/
       Description: "This function reads the allowed and rejected products from the given PMP Experience and udpate the DynamoDB tables"
@@ -244,9 +243,8 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: add_sns_permission.handler
-      Runtime: python3.9
       CodeUri: src/add_sns_permission/
-      Description: This lambda is the backed of the customer resource to add a new account to the SNS Topic Policy
+      Description: Custom Resource lambda to add a new account to the SNS Topic Policy
       Role: !GetAtt SnsAddPermissionRole.Arn
       FunctionName: !Sub "${ManagementExperienceId}-SNSAddPermission"
   SNSAddPermission:
@@ -265,7 +263,7 @@ Resources:
     Properties:
       Name: !Sub "/${ManagementExperienceId}/SNSAddPermissionLambda"
       Type: String
-      Description: "The lambda arm used for the SNSAddPermission custom cfn resource"
+      Description: "Custom Resource lambda arm used for the SNSAddPermission custom cfn resource"
       Value: !GetAtt SNSAddPermissionLambda.Arn
   PMPExperienceID:
     Condition: FullDeployment
@@ -361,7 +359,7 @@ Resources:
   MemberOrgAccountRole:
     Type: AWS::IAM::Role
     Properties:
-      Description: "Role used by the member organization to access DynamoDB."
+      Description: "Role used by the member organization(s) to access DynamoDB."
       Policies:
         - PolicyName: !Sub "${ManagementExperienceId}-MemberOrgAccountPolicy"
           PolicyDocument:
